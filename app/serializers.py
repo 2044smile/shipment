@@ -16,10 +16,11 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items_details = serializers.SerializerMethodField()
+    purchase_order_date = serializers.DateTimeField(source="created_at")
 
     class Meta:
         model = Order
-        fields = ['user', 'items_details']
+        fields = ['user', 'items_details', 'purchase_order_date']
 
     def get_items_details(self, obj):
         return {item.id: item.name for item in obj.items.all()}
