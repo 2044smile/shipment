@@ -6,6 +6,6 @@ class HealthCheckMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == '/health':
+        if request.path == '/health/' or request.path == '/health':
             return JsonResponse({"status": "ok"}, status=200)
         return self.get_response(request)
