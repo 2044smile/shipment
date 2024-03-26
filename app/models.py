@@ -25,14 +25,6 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class User(BaseModel):
-    username=models.CharField(max_length=32)
-    email=models.EmailField(unique=True)
-    password=models.CharField(max_length=32)
-
-    def __str__(self):
-        return self.username
-
 class Item(BaseModel):
     name=models.CharField(max_length=64)
     description=models.TextField(null=True)
@@ -43,7 +35,7 @@ class Item(BaseModel):
     
 
 class Order(BaseModel): # 주문날짜 BaseModel created_at
-    user=models.ForeignKey('User', on_delete=models.CASCADE)
+    # user=models.ForeignKey('User', on_delete=models.CASCADE)
     items=models.ManyToManyField(Item)
 
     # def save(self, *args, **kwargs):
@@ -71,7 +63,6 @@ class Delivery(BaseModel):
     address=models.CharField(max_length=255)
     status=models.CharField(max_length=16, choices=DELIVERY_STATUS)
     # departure_date=models.DateTimeField() # 배송 출발일 random
-    # status=models.TextChoices # [pending, departure, ing, finished]
 
     # @property
     # def departure_date(self):

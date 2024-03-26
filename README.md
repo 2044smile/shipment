@@ -9,6 +9,14 @@
 
 - GET /health/ `# ok`
 
+## Feature
+
+1. UserModel Kakao Login
+2. End-point Create
+3. /admin 페이지 상품 관리
+
+## FLOW
+
 ## TIP
 
 - 딕셔너리 컴프리헨션
