@@ -45,7 +45,7 @@ class Item(BaseModel):
 
 class Order(BaseModel): # 주문날짜 BaseModel created_at
     user=models.ForeignKey('User', on_delete=models.CASCADE)
-    items=models.OneTOMany(Item)
+    items=models.ManyToManyField(Item)
 
     # def save(self, *args, **kwargs):
     #     super(Order, self).save(*args, **kwargs)
@@ -70,7 +70,7 @@ class Delivery(BaseModel):
     )
     order=models.OneToOneField(Order, on_delete=models.CASCADE)
     address=models.CharField(max_length=255)
-    status=models.CharField(max_length=16, choice=DELIVERY_STATUS)
+    status=models.CharField(max_length=16, choices=DELIVERY_STATUS)
     # departure_date=models.DateTimeField() # 배송 출발일 random
     # status=models.TextChoices # [pending, departure, ing, finished]
 
