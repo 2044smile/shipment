@@ -19,6 +19,7 @@ class BaseModel(models.Model):
         verbose_name="수정 일시",
         help_text="데이터가 수정 된 날짜입니다."
     )
+    is_valid=models.BooleanField(default=False)
 
     class Meta:
         abstract = True
@@ -28,7 +29,6 @@ class User(BaseModel):
     username=models.CharField(max_length=32)
     email=models.EmailField(unique=True)
     password=models.CharField(max_length=32)
-    is_valid=models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -37,7 +37,6 @@ class Item(BaseModel):
     name=models.CharField(max_length=64)
     description=models.TextField(null=True)
     price=models.PositiveIntegerField(default=0)
-    is_valid=models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
