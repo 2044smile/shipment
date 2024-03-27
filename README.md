@@ -13,7 +13,9 @@
 ## Feature
 
 ~~1. UserModel Kakao Login~~ used POSTMAND and Wrote a code
+
 ~~2. End-point Create~~ used Swagger(drf-yasg)
+
 3. /admin 페이지 상품 관리
 
 ## FLOW
