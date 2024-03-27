@@ -5,22 +5,20 @@ from app.models import BaseModel
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, password=None):
+    def create_user(self, username):
         if not username:
             raise ValueError('must have an username')
         
         user = self.model(
-            email=self.normalize_email(username=username)
+            username=self.normalize_email(username=username)
         )
 
-        user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, username, password=None):
+    def create_superuser(self, username):
         user = self.create_user(
             username=username,
-            password=password,
         )
         user.is_staff = True
         user.is_superuser = True
@@ -31,7 +29,6 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     kakao_id = models.IntegerField(
         verbose_name='Kakao ID',
-        max_length=32,
         unique=True
     )
     username = models.CharField(
