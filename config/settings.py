@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     'app',
     'accounts',
+    'drf_yasg',
     'rest_framework',
     'django_extensions',
 ]
