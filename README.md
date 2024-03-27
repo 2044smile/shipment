@@ -12,10 +12,8 @@
 
 ## Feature
 
-~~1. UserModel Kakao Login~~ used POSTMAND and Wrote a code
-
-~~2. End-point Create~~ used Swagger(drf-yasg)
-
+~~1. UserModel Kakao Login~~ used POSTMAND and Wrote a code <br>
+~~2. End-point Create~~ used Swagger(drf-yasg) <br>
 3. /admin 페이지 상품 관리
 
 ## FLOW
@@ -45,7 +43,7 @@ target = get_random_string(length=16, allowed_chars="가나다라마바사thanky
 - Swagger details
 ```python
 access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="Send it to me from Frontend", required=True, type=openapi.TYPE_STRING)
-    @swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[access_token])
+@swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[access_token])
 ```
 
 ### Reference
