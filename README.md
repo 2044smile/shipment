@@ -49,3 +49,4 @@ access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="
 ### Reference
 
 - [POSTMAN으로 프론트엔드 역할 대체](https://rhdqors.tistory.com/39)
+- [Swagger](https://drf-yasg.readthedocs.io/en/stable/custom_spec.html#the-swagger-auto-schema-decorator)
