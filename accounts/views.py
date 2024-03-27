@@ -1,116 +1,45 @@
-import os, requests
+import requests
 
-from django.shortcuts import render, redirect
-from django.views import View
 from django.utils.crypto import get_random_string
+from django.http import JsonResponse
+from rest_framework.views import APIView 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from .models import User
 
 
-class AccountKakaoView(View):
+class KakaoLoginView(APIView):
+    access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="Send it to me from Frontend", required=True, type=openapi.TYPE_STRING)
+    @swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[access_token])
     def get(self, request):
-        KAKAO_API = "https://kauth.kakao.com/oauth/authorize?response_type=code"
-        CLIENT_ID = os.environ.get('KAKAO_REST_API_KEY')
-        REDIRECT_URI = "http://localhost:8000/accounts/kakao/callback"
-        
-        return redirect(f"{KAKAO_API}&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}")
-    
+        kakao_access_token = request.GET.get("access_token", None)
 
-class AccountKakaoCallBackView(View):
-    def get(self, request):
-        data = {
-            "grant_type": "authorization_code",
-            "client_id": os.environ.get('KAKAO_REST_API_KEY'),
-            "redirection_uri": "http://localhost:8000/accounts/kakao",
-            "code": request.GET.get('code')
+        if not kakao_access_token:
+            return JsonResponse({"error": "카카오 액세스 토큰이 제공되지 않았습니다."}, status=400)
+
+        url = "https://kapi.kakao.com/v2/user/me"
+        headers = {
+            "Authorization": f"Bearer {kakao_access_token}",
+            "Content-type": "application/x-www-form-urlencoded; charset=utf-8"
         }
 
-        token_response = requests.post("https://kauth.kakao.com/oauth/token", data=data)
-        access_token = token_response.json().get('access_token')
+        try:
+            response = requests.post(url, headers=headers)
+            response.raise_for_status()
+            response_data = response.json()
+        except requests.RequestException:
+            return JsonResponse({"error": f"카카오 서버와의 통신에 실패했습니다: {str(e)}"}, status=500)
+        except ValueError as e:
+            return JsonResponse({"error": f"카카오 서버의 응답을 JSON으로 파싱하는 중에 오류가 발생했습니다: {str(e)}"}, status=500)
 
-        user_info = requests.get("https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})  # 사용자 정보 요청
-        token = {"token": user_info.json()}
-        request.session['user'] = token
 
-        session = request.session.get('user')
-
-        if session is None:
-            return redirect('kakao_login')
-        
         target = get_random_string(length=16, allowed_chars="가나다라마바사thankyousomuch")
-        kakao_nickname = session['token']['kakao_account']['profile']['nickname']
 
-        user = User.objects.get_or_create(
-            kakao_nickname=kakao_nickname,
+        obj, created = User.objects.get_or_create(
+            kakao_id=response_data['id'],
+            kakao_nickname=response_data['properties']['nickname'],
+            defaults={'username': target}
         )
 
-        if user[0].username == '':
-            user[0].username = target
-            user[0].save()
-
-        # return 
-        return redirect(f"http://localhost:8000/health")
-
-
-# class AccountSignupView(View):
-#     def get(self, request, **kwargs):
-#         session = request.session.get('user')
-
-#         # 여기서 세션이 없다면 회원가입 차단하는 로직 추가 즉 처음 로그인 한다면 kakao_login 으로 이동
-#         if session is None:
-#             return redirect('kakao_login')
-
-#         form = AccountForm()
-#         form.fields['kakao_nickname'].initial = session['token']['kakao_account']['profile']['nickname']
-
-#         # user = User.objects.get(kakao_nickname=session['token']['kakao_account']['profile']['nickname'])
-#         # 카카오 로그인 시 [필수] 와 [선택] 선택의 경우 사용자가 선택하지 않으면 이메일을 따로 입력하던가 해야될 듯?
-#         # 아니면 카카오스토리 프로필 URL 의 경우에는 중복이 될 수 없으므로 이것으로 처리해도 될 듯
-#         ## 추가적으로 카카오로 아이디가 회원가입이 되어 있으면 redirect 해서 로그인을 자동으로 수행하도록
-
-#         context = {
-#             "session": session,
-#             "form": form
-#         }
-
-#         return render(request, 'signup.html', context=context)
-
-#     def post(self, request, **kwargs):
-#         form = AccountForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('signin')
-
-#         context = {
-#             "form": form
-#         }
-
-#         return render(request, 'signin.html', context=context)
-
-
-# class AccountSigninView(View):
-#     def get(self, request, **kwargs):
-#         # 카카오 로그인이 되어 있으면 자동으로 화면을 옮겨 로그인
-#         session = request.session.get('user')  # token = {"token": user_info.json()}
-#         print(f'AccountSigninView, {session}', flush=True)
-
-#         return render(request, 'signin.html', context=session)
-
-
-# class AccountSignoutView(View):
-#     def get(self, request, **kwargs):
-#         session = request.session.get('user')
-#         print(f'AccountSignoutView, {session}', flush=True)
-#         url = 'https://kapi.kakao.com/v1/user/logout'
-#         header = {
-#             'Authorization': f'bearer {session}'
-#         }
-
-#         response = requests.post(url, headers=header)
-#         result = response.json()
-
-#         if result.get('id'):
-#             del request.session['user']
-#             return render(request, 'index.html')
-
-#         return render(request, 'index.html')
+        return JsonResponse({"kakao_id": f"{obj.kakao_id}", "kakao_nickname": f"{obj.kakao_nickname}", "usernmae": f"{obj.username}"})
