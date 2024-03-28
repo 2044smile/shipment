@@ -3,7 +3,8 @@
 ## Installed
 
 - django==4.2.11 `# stable version`
-- djangorestframewwork
+- djangorestframework
+- djangorestframework-simplejwt
 - drf-yasg
 
 ## Middleware
@@ -14,7 +15,10 @@
 
 ~~1. UserModel Kakao Login~~ used POSTMAND and Wrote a code <br>
 ~~2. End-point Create~~ used Swagger(drf-yasg) <br>
-3. /admin 페이지 상품 관리
+3. /admin 페이지 상품 관리 <br>
+4. Back-end Kakao used URL
+- https://kapi.kakao.com/v2/user/me
+- https://kapi.kakao.com/v1/user/access_token_info
 
 ## FLOW
 
