@@ -27,14 +27,14 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
-    kakao_id = models.IntegerField(
-        verbose_name='Kakao ID',
-        unique=True
-    )
     username = models.CharField(
         verbose_name='username',
         max_length=32,
         null=True
+    )
+    kakao_id = models.IntegerField(
+        verbose_name='Kakao ID',
+        unique=True
     )
     kakao_nickname = models.CharField(
         verbose_name='Kakao Nickname',

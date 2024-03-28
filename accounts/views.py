@@ -2,8 +2,10 @@ import requests
 
 from django.utils.crypto import get_random_string
 from django.http import HttpResponse, JsonResponse
+from rest_framework import status
 from rest_framework.views import APIView 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenVerifySerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -42,7 +44,7 @@ class SignUpAPIView(APIView):
     @swagger_auto_schema(operation_description="회원가입", responses={200: 'Success'}, request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'kakao_access_token': openapi.Schema(type=openapi.TYPE_STRING, description='kakao_access token'),
+                'kakao_access_token': openapi.Schema(type=openapi.TYPE_STRING, description='kakao_access token'),  # 회원가입 Kakao Access Token 사용
                 'kakao_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='kakao id'),
                 'kakao_nickname': openapi.Schema(type=openapi.TYPE_STRING, description='kakao nickname'),
             }
@@ -70,6 +72,35 @@ class SignUpAPIView(APIView):
 
             user.save()
 
-            return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token})
+            return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token})  # jwt token 발급
         else:
             return JsonResponse({'errors': '중복 데이터가 존재합니다.', 'details': f"{serializer.errors}"}, status=400)
+
+
+class SignInAPIView(APIView):
+    @swagger_auto_schema(operation_description="로그인", responses={200: 'Success'}, request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'access_token': openapi.Schema(type=openapi.TYPE_STRING, description='access token'),  # 로그인 jwt Access Token 사용'
+                'kakao_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='kakao id'),
+                'kakao_nickname': openapi.Schema(type=openapi.TYPE_STRING, description='kakao nickname'),
+            }
+    ))
+    def post(self, request):
+        # 프론트엔드에서는 Access Token 과 유저의 개인정보를 가지고 있다는 가정
+        data = {}
+        try:
+            user = User.objects.get(kakao_id=request.data.get("kakao_id", None))
+            if user is None:
+                return JsonResponse({'errors': '유저가 존재하지 않습니다.'}, status=400)
+            
+            response = requests.post('http://localhost:8000/accounts/token/verify/', data={'token': request.data.get("access_token")})
+            if response.status_code != 200:
+                return JsonResponse({'errors': '토큰이 유효하지 않습니다.'}, status=400)
+            data['access_token'] = request.data.get("access_token")
+            data['kakao_id'] = request.data.get("kakao_id")
+            data['kakao_nickname'] = request.data.get("kakao_nickname")
+            return Response(data, status=status.HTTP_200_OK)
+            
+        except:
+            pass
