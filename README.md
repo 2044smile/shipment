@@ -20,7 +20,20 @@
 - https://kapi.kakao.com/v2/user/me
 - https://kapi.kakao.com/v1/user/access_token_info
 
-## FLOW
+## API
+### Account
+- accounts/kakao
+- accounts/signup
+- accounts/signin
+- accounts/token/verify
+- accounts/token/refresh
+### Deliveries
+- CRUD
+### Items
+- CRUD
+### Orders
+- CRUD
+
 
 ## TIP
 
