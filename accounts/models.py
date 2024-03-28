@@ -34,13 +34,16 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     username = models.CharField(
         verbose_name='username',
         max_length=32,
+        null=True
     )
     kakao_nickname = models.CharField(
         verbose_name='Kakao Nickname',
-        max_length=32,
-        unique=True
+        max_length=32
     )
-
+    is_valid = models.BooleanField(
+        verbose_name='is valid',
+        default=False
+    )
     is_active = models.BooleanField(
         verbose_name='is active',
         default=True
@@ -49,4 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
-    USERNAME_FIELD = 'kakao_nickname'
+    USERNAME_FIELD = 'kakao_id'
+
+    def __str__(self):
+        return self.kakao_nickname
