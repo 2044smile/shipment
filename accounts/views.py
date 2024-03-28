@@ -97,9 +97,11 @@ class SignInAPIView(APIView):
             response = requests.post('http://localhost:8000/accounts/token/verify/', data={'token': request.data.get("access_token")})
             if response.status_code != 200:
                 return JsonResponse({'errors': '토큰이 유효하지 않습니다.'}, status=400)
+            
             data['access_token'] = request.data.get("access_token")
             data['kakao_id'] = request.data.get("kakao_id")
             data['kakao_nickname'] = request.data.get("kakao_nickname")
+            
             return Response(data, status=status.HTTP_200_OK)
             
         except:
