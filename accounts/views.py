@@ -12,11 +12,10 @@ from .serializers import UserSerializer
 
 
 class GetKakaoInfoAPIView(APIView):
-    access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="Send it to me from Frontend", required=True, type=openapi.TYPE_STRING)
-    @swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[access_token])
+    kakao_access_token = openapi.Parameter('kakao_access_token', openapi.IN_QUERY, description="Send it to me from Frontend", required=True, type=openapi.TYPE_STRING)
+    @swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[kakao_access_token])
     def get(self, request):
-        kakao_access_token = request.GET.get("access_token", None)
-        # kakao_refresh_token = request.GET.get("refresh_token", None)
+        kakao_access_token = request.GET.get("kakao_access_token", None)
 
         if not kakao_access_token:
             return JsonResponse({"error": "카카오 액세스 토큰이 제공되지 않았습니다."}, status=400)
@@ -43,7 +42,7 @@ class SignUpAPIView(APIView):
     @swagger_auto_schema(operation_description="회원가입", responses={200: 'Success'}, request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'access_token': openapi.Schema(type=openapi.TYPE_STRING, description='access token'),
+                'kakao_access_token': openapi.Schema(type=openapi.TYPE_STRING, description='kakao_access token'),
                 'kakao_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='kakao id'),
                 'kakao_nickname': openapi.Schema(type=openapi.TYPE_STRING, description='kakao nickname'),
             }
@@ -51,21 +50,26 @@ class SignUpAPIView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            request = requests.get(url='https://kapi.kakao.com/v1/user/access_token_info', params={'access_token': request.data.get('kakao_access_token')})
+            if request.status_code != 200:
+                return JsonResponse({"error": f"카카오 Access Token 이 유효하지 않습니다.: {request.status_code}"}, status=int(request.status_code))
             user = serializer.save()
 
             token = TokenObtainPairSerializer.get_token(user)
+
             refresh_token = str(token)
             access_token = str(token.access_token)
 
             target = get_random_string(length=16, allowed_chars="가나다라마바사thankyousomuch")
 
-            kakao_id = serializer.data('kakao_id')
-            kakao_nickname = serializer.data('kakao_nickname')
+            if user.username is True:
+                user.is_valid = True
+            else:
+                user.username = target
+                user.is_valid = True
 
-            User.objects.get_or_create(
-                kakao_id=kakao_id,
-                kakao_nickname=kakao_nickname,
-                defaults={'username': target}
-            )
+            user.save()
+
+            return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token})
         else:
             return JsonResponse({'errors': '중복 데이터가 존재합니다.', 'details': f"{serializer.errors}"}, status=400)
