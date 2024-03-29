@@ -5,20 +5,24 @@ from app.models import BaseModel
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username):
-        if not username:
-            raise ValueError('must have an username')
+    use_in_migrations = True
+
+    def create_user(self, user_id, password):
+        if not user_id:
+            raise ValueError('must have an user_id')
         
         user = self.model(
-            username=self.normalize_email(username=username)
+            user_id=user_id
         )
 
+        user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, username):
+    def create_superuser(self, user_id, password=None):
         user = self.create_user(
-            username=username,
+            user_id=user_id,
+            password=password
         )
         user.is_staff = True
         user.is_superuser = True
@@ -27,18 +31,29 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
+    user_id = models.CharField(
+        verbose_name='user_id',
+        max_length=32,
+        unique=True
+    )
+    password = models.CharField(
+        verbose_name='password',
+        max_length=32,
+        null=True
+    )
     username = models.CharField(
         verbose_name='username',
         max_length=32,
         null=True
     )
     kakao_id = models.IntegerField(
-        verbose_name='Kakao ID',
-        unique=True
+        verbose_name='kakao_id',
+        null=True
     )
     kakao_nickname = models.CharField(
-        verbose_name='Kakao Nickname',
-        max_length=32
+        verbose_name='nickname',
+        max_length=32,
+        null=True
     )
     is_valid = models.BooleanField(
         verbose_name='is valid',
@@ -52,7 +67,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
-    USERNAME_FIELD = 'kakao_id'
+    USERNAME_FIELD = 'user_id'
 
     def __str__(self):
-        return self.kakao_nickname
+        if self.is_staff == True:
+            return self.user_id
+        else:
+            return self.kakao_id

@@ -50,7 +50,12 @@ class SignUpAPIView(APIView):
             }
     ))
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = UserSerializer(data={
+            "kakao_access_token": request.data['kakao_access_token'],
+            "kakao_id": request.data['kakao_id'],
+            "kakao_nickname": request.data['kakao_nickname'],
+            "user_id": request.data['kakao_id']
+        })
         if serializer.is_valid():
             request = requests.get(url='https://kapi.kakao.com/v1/user/access_token_info', params={'access_token': request.data.get('kakao_access_token')})
             if request.status_code != 200:
