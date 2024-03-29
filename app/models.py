@@ -34,6 +34,7 @@ class Item(BaseModel):
     
 
 class Order(BaseModel): # 주문날짜 BaseModel created_at
+    user=models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     items=models.ManyToManyField(Item)
 
     def get_items(self, obj):
@@ -48,6 +49,7 @@ class Delivery(BaseModel):
         ('1', 'departure'),
         ('2', 'arrival')
     )
+    user=models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     order=models.OneToOneField(Order, on_delete=models.CASCADE)
     address=models.CharField(max_length=255)
     status=models.CharField(max_length=16, choices=DELIVERY_STATUS)

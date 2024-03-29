@@ -9,7 +9,7 @@ class ItemAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['get_items', 'created_at', 'updated_at']
+    list_display = ['user', 'get_items', 'created_at', 'updated_at']
 
     def get_items(self, obj):
         return "\n".join([i.name for i in obj.items.all()])
@@ -17,4 +17,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Delivery)
 class DeliveryAdmin(admin.ModelAdmin):
-    list_display = ['order', 'address', 'status', 'created_at', 'updated_at']
+    list_display = ['user', 'order', 'address', 'status', 'created_at', 'updated_at']
