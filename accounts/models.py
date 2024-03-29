@@ -73,4 +73,4 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         if self.is_staff == True:  # admin 유저의 경우 is_staff 가 True 일 것이기에 return user_id 하지만 일반 유저의 경우 return kakao_id
             return self.user_id
         else:
-            return self.kakao_id
+            return str(self.kakao_id)
