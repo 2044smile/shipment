@@ -31,26 +31,26 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
-    user_id = models.CharField(
+    user_id = models.CharField(  # admin 유저를 위해 만든 user_id OAuth 로 카카오 로그인 시 kakao_id 의 값이 user_id 로 복사된다.
         verbose_name='user_id',
         max_length=32,
         unique=True
     )
-    password = models.CharField(
+    password = models.CharField(  # admin 유저를 위해 만든 패스워드
         verbose_name='password',
         max_length=32,
         null=True
     )
-    username = models.CharField(
+    username = models.CharField(  # 랜덤으로 생성되는 username
         verbose_name='username',
         max_length=32,
         null=True
     )
-    kakao_id = models.IntegerField(
+    kakao_id = models.IntegerField(  # 카카오 로그인 시 사용자에게 발급되면 kakao_id 고유키
         verbose_name='kakao_id',
         null=True
     )
-    kakao_nickname = models.CharField(
+    kakao_nickname = models.CharField(  # 카카오 사용자가 설정한 nickname
         verbose_name='nickname',
         max_length=32,
         null=True
@@ -70,7 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     USERNAME_FIELD = 'user_id'
 
     def __str__(self):
-        if self.is_staff == True:
+        if self.is_staff == True:  # admin 유저의 경우 is_staff 가 True 일 것이기에 return user_id 하지만 일반 유저의 경우 return kakao_id
             return self.user_id
         else:
             return self.kakao_id
