@@ -1,7 +1,6 @@
-from faker import Faker
-
 from django.db import models
-from django.db.models import F, Sum
+
+from accounts.models import User
 
 
 class BaseModel(models.Model):
@@ -27,7 +26,7 @@ class BaseModel(models.Model):
 
 class Item(BaseModel):
     name=models.CharField(max_length=64)
-    description=models.TextField(null=True)
+    description=models.TextField(blank=True)
     price=models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -35,23 +34,13 @@ class Item(BaseModel):
     
 
 class Order(BaseModel): # 주문날짜 BaseModel created_at
-    # user=models.ForeignKey('User', on_delete=models.CASCADE)
     items=models.ManyToManyField(Item)
 
-    # def save(self, *args, **kwargs):
-    #     super(Order, self).save(*args, **kwargs)
-    #     user = User.objects.get(id=self.user.id)
-    #     user.order_set.last()
-    #     import pdb;
-    #     pdb.set_trace()
-
-    # @property
-    # def property_total_price(self):
-    #     import pdb;
-    #     pdb.set_trace()
-    #     self.total_price=self.items.values().aggregate(total_price=Sum('price'))
-    #     return self.total_price
-
+    def get_items(self, obj):
+        return "\n".join([i.name for i in obj.itmes.all()])
+    
+    def __str__(self):
+        return "\n".join([i.name for i in self.items.all()])
 
 class Delivery(BaseModel):
     DELIVERY_STATUS = (
@@ -63,10 +52,3 @@ class Delivery(BaseModel):
     address=models.CharField(max_length=255)
     status=models.CharField(max_length=16, choices=DELIVERY_STATUS)
     # departure_date=models.DateTimeField() # 배송 출발일 random
-
-    # @property
-    # def departure_date(self):
-    #     fake = Faker()
-    #     departure_date = self.order_set.created_at
-    #     fake.date_between(start_date=self.order_set.created_at, end_date='+12h')
-    #     return self.order_set.created_at

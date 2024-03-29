@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-from app.models import BaseModel
-
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -30,7 +28,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin, BaseModel):
+class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.CharField(  # admin 유저를 위해 만든 user_id OAuth 로 카카오 로그인 시 kakao_id 의 값이 user_id 로 복사된다.
         verbose_name='user_id',
         max_length=32,
@@ -54,6 +52,13 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         verbose_name='nickname',
         max_length=32,
         null=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,  # 최초 저장
+        blank=True,
+        null=False,
+        verbose_name="생성 일시",
+        help_text="데이터가 생성 된 날짜입니다."
     )
     is_valid = models.BooleanField(
         verbose_name='is valid',
