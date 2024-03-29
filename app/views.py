@@ -8,7 +8,7 @@ from .serializers import *
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-    permission_classes = [IsAdminOrReadOnly]  # 정상 작동
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -19,4 +19,4 @@ class OrderViewSet(viewsets.ModelViewSet):
 class DeliveryViewSet(viewsets.ModelViewSet):
     queryset = Delivery.objects.all()
     serializer_class = DeliverySerializer
-    permission_classes = [IsAdminOrReadOnly]  # 정상 작동
+    permission_classes = [IsAdminOrReadOnly]
