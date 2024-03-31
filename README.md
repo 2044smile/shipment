@@ -28,11 +28,11 @@
 - accounts/signin
 - accounts/token/verify
 - accounts/token/refresh
-### Deliveries
+### Deliveries [foregin key user, IsAdminOrReadOnly]
 - CRUD
-### Items
+### Items [isAdminOrReadOnly]
 - CRUD
-### Orders
+### Orders [foregin key user]
 - CRUD
 
 
