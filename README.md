@@ -22,7 +22,7 @@
 - https://kapi.kakao.com/v1/user/access_token_info
 
 ## API
-### Account [kakao login -> shipment signup -> JWT token]
+### Account [kakao login -> shipment signup(kakao access token) -> JWT token(access token, refresh token)]
 - accounts/kakao
 - accounts/signup
 - accounts/signin
