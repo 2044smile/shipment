@@ -16,7 +16,8 @@
 ~~1. UserModel Kakao Login~~ used POSTMAND and Wrote a code <br>
 ~~2. End-point Create~~ used Swagger(drf-yasg) <br>
 3. /admin 페이지 상품 관리 <br>
-4. Back-end Kakao URL used 
+4. TestCode
+5. Back-end Kakao URL used 
 - https://kapi.kakao.com/v2/user/me
 - https://kapi.kakao.com/v1/user/access_token_info
 
