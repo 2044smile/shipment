@@ -66,6 +66,8 @@ class SignUpAPIView(APIView):
 
             refresh_token = str(token)
             access_token = str(token.access_token)
+            iat = token.get('iat', None)  # 토큰이 발급 된 시간
+            exp = token.get('exp', None)  # 토큰 만료 시간
 
             target = get_random_string(length=16, allowed_chars="가나다라마바사thankyousomuch")
 
@@ -77,7 +79,14 @@ class SignUpAPIView(APIView):
 
             user.save()
 
-            return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token})  # jwt token 발급
+            return JsonResponse({
+                'kakao_id': user.kakao_id,
+                'access_token': access_token, 
+                'refresh_token': refresh_token,
+                'iat': iat,
+                'exp': exp,
+                
+            })  # jwt token 발급
         else:
             return JsonResponse({'errors': '중복 데이터가 존재합니다.', 'details': f"{serializer.errors}"}, status=400)
 
