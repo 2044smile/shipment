@@ -52,5 +52,5 @@ class Delivery(BaseModel):
     user=models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     order=models.OneToOneField(Order, on_delete=models.CASCADE)
     address=models.CharField(max_length=255)
-    status=models.CharField(max_length=16, choices=DELIVERY_STATUS)
+    status=models.CharField(max_length=16, choices=DELIVERY_STATUS, default='0')
     # departure_date=models.DateTimeField() # 배송 출발일 random
