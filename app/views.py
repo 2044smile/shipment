@@ -26,6 +26,8 @@ class DeliveryViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'], name='departure')
     def departure(self, request, pk=None):
         instance = self.get_object()
+        if instance.status == '2':
+            return JsonResponse({'message': f'{instance.id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
         instance.status = '1'
         instance.save()
 
