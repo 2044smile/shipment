@@ -31,4 +31,4 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
         process_delivery_task.s(delivery_id=instance.id).apply_async(countdown=300)
 
-        return JsonResponse({'message': f'{instance.id} 고객님 배송이 출발하였습니다. 300 초 후 도착합니다.'})
+        return JsonResponse({'message': f'{instance.id} 고객님 배송이 출발하였습니다. the delivery service will arrive in 300 seconds'})
