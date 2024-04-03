@@ -7,6 +7,12 @@
 - djangorestframework-simplejwt
 - drf-yasg
 
+### docker-compose
+
+- app (django)
+- rabbitmq
+- celery
+
 ## Middleware
 
 - GET /health/ `# ok`
