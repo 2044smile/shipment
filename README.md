@@ -36,6 +36,7 @@
 - accounts/token/refresh
 ### Deliveries [foregin key user, IsAdminOrReadOnly]
 - CRUD
+- /deliveries/{id}/departure  # 배송 출발 --> Rabbitmq(broker) + Celery(worker) 비동기 300초 지연 시간 --> 배송 도착
 ### Items [isAdminOrReadOnly]
 - CRUD
 ### Orders [foregin key user]
