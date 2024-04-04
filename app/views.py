@@ -27,10 +27,10 @@ class DeliveryViewSet(viewsets.ModelViewSet):
     def departure(self, request, pk=None):
         instance = self.get_object()
         if instance.status == '2':
-            return JsonResponse({'message': f'{instance.id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
+            return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
         instance.status = '1'
         instance.save()
 
         process_delivery_task.s(delivery_id=instance.id).apply_async(countdown=300)
 
-        return JsonResponse({'message': f'{instance.id} 고객님 배송이 출발하였습니다. the delivery service will arrive in 300 seconds'})
+        return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품 {" ".join([i.name for i in instance.order.items.all()])} 배송이 출발하였습니다. the delivery service will arrive in 300 seconds'})
