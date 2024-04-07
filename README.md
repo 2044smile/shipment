@@ -25,10 +25,11 @@
 
 ## Feature
 
-~~1. UserModel Kakao signin, signup~~<br>
-~~2. I used Swagger(drf-yasg)~~ <br>
-~~3. simplejwt using bearer JWT token~~ <br>
-4. TestCode
+~~1. UserModel Kakao signin, signup~~ <br>
+~~2. docker-compose (django, rabbitmq, celery~~) <br>
+~~3. I used Swagger(drf-yasg)~~ <br>
+~~4. simplejwt using bearer JWT token~~ <br>
+5. TestCode
 
 ## API
 ### Account
