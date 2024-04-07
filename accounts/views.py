@@ -99,8 +99,6 @@ class KakaoSignUpAPIView(APIView):
 
             kakao_id = response_data["id"]
             kakao_nickname = response_data['properties']['nickname']
-
-            user = User.objects.update_or_create(kakao_id=kakao_id, kakao_nickname=kakao_nickname)
         except requests.RequestException:
             return JsonResponse({"error": "카카오 서버와의 통신에 실패했습니다."}, status=500)
         except ValueError as e:
@@ -141,7 +139,6 @@ class KakaoSignUpAPIView(APIView):
                 'refresh_token': refresh_token,
                 'iat': iat,
                 'exp': exp,
-                
             })  # jwt token 발급
         else:
             return JsonResponse({'errors': '중복 데이터가 존재합니다.', 'details': f"{serializer.errors}"}, status=400)
