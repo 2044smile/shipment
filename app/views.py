@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from config.permissions import IsAdminOrReadOnly
 
 from .serializers import *
@@ -10,18 +11,22 @@ from app.tasks import process_delivery_task
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
 
 class DeliveryViewSet(viewsets.ModelViewSet):
     queryset = Delivery.objects.all()
     serializer_class = DeliverySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     @action(detail=True, methods=['GET'], name='departure')
     def departure(self, request, pk=None):

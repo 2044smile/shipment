@@ -2,10 +2,9 @@ import requests
 
 from django.utils.crypto import get_random_string
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, JsonResponse
-from rest_framework import status
+from django.http import JsonResponse
+from rest_framework import permissions
 from rest_framework.views import APIView 
-from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenVerifySerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -23,6 +22,8 @@ class KakaoSignInAPIView(APIView):
     #             'kakao_nickname': openapi.Schema(type=openapi.TYPE_STRING, description='kakao nickname'),
     #         }
     # ))
+    permission_classes = [permissions.AllowAny]
+
     access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="access_token", required=True, type=openapi.TYPE_STRING)
     @swagger_auto_schema(operation_description="카카오에서 전달받은 액세스 토큰", responses={200: 'Success'}, manual_parameters=[access_token])
     def post(self, request):
@@ -73,6 +74,8 @@ class KakaoSignInAPIView(APIView):
     
     
 class KakaoSignUpAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="access_token", required=True, type=openapi.TYPE_STRING)
     @swagger_auto_schema(operation_description="회원가입", responses={200: 'Success'}, manual_parameters=[access_token])
     def post(self, request):
