@@ -2,9 +2,9 @@ from django.http import JsonResponse
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from config.permissions import IsAdminOrReadOnly
 
-from .serializers import *
+from .serializers import ItemSerializer, OrderSerializer, DeliverySerializer
+from .models import Item, Order, Delivery
 from app.tasks import process_delivery_task
 
 
