@@ -53,19 +53,16 @@ class KakaoSignInAPIView(APIView):
         except ObjectDoesNotExist:
             return JsonResponse({"error": "SHIPMENT 회원가입이 되어 있지 않습니다."})
         
-        try:
-            request = requests.get(url='https://kapi.kakao.com/v1/user/access_token_info', params={'access_token': access_token})
-            if request.status_code != 200:
-                return JsonResponse({"error": f"카카오 Access Token 이 유효하지 않습니다.: {request.status_code}"}, status=int(request.status_code))
-            
-            token = TokenObtainPairSerializer.get_token(user)
-            
-            refresh_token = str(token)
-            access_token = str(token.access_token)
-            iat = token.get('iat', None)  # 토큰이 발급 된 시간
-            exp = token.get('exp', None)  # 토큰 만료 시간
-        except:
-            pass
+        request = requests.get(url='https://kapi.kakao.com/v1/user/access_token_info', params={'access_token': access_token})
+        if request.status_code != 200:
+            return JsonResponse({"error": f"카카오 Access Token 이 유효하지 않습니다.: {request.status_code}"}, status=int(request.status_code))
+        
+        token = TokenObtainPairSerializer.get_token(user)
+        
+        refresh_token = str(token)
+        access_token = str(token.access_token)
+        iat = token.get('iat', None)  # 토큰이 발급 된 시간
+        exp = token.get('exp', None)  # 토큰 만료 시간
 
         return JsonResponse({
             "access_token": access_token,
@@ -73,7 +70,6 @@ class KakaoSignInAPIView(APIView):
             "iat": iat,
             "exp": exp
         })
-        # return JsonResponse({"kakao_id": f"{response_data['id']}", "kakao_nickname": f"{response_data['properties']['nickname']}"})
     
     
 class KakaoSignUpAPIView(APIView):
