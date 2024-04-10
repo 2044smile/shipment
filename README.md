@@ -95,6 +95,84 @@ access_token = openapi.Parameter('access_token', openapi.IN_QUERY, description="
 @swagger_auto_schema(operation_description="프론트엔드(POSTMAN) 토큰 전달", responses={200: 'Success'}, manual_parameters=[access_token])
 ```
 
+- custom middleware
+```python
+from django.http import JsonResponse
+
+
+class HealthCheckMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.path == '/health/' or request.path == '/health':
+            return JsonResponse({"status": "ok"}, status=200)
+        return self.get_response(request)
+```
+
+- Celery all flow
+```python
+# config/settings.py
+INSTALLED_APPS = ['celery',]
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+# CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+# CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
+CELERY_BROKER_URL="amqp://guest:guest@rabbitmq:5672/"
+# CELERY_RESULT_BACKEND = 'django-db'
+
+# config/celery.py
+import os
+
+from celery import Celery
+
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+app = Celery("config")
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks()
+
+# config/__init__.py
+from .celery import app as celery_app
+
+
+__all__ = ['celery_app']
+
+# app/tasks.py
+from config.celery import app
+
+from .models import Delivery
+
+
+@app.task
+def process_delivery_task(delivery_id):
+    instance = Delivery.objects.get(id=delivery_id)
+    instance.status = "2"
+    instance.is_valid = True  # 배송 완료
+    instance.save()
+
+# app/views.py
+class DeliveryViewSet(viewsets.ModelViewSet):
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    @action(detail=True, methods=['GET'], name='departure')
+    def departure(self, request, pk=None):
+        instance = self.get_object()
+        if instance.status == '2':
+            return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
+        instance.status = '1'
+        instance.save()
+
+        process_delivery_task.s(delivery_id=instance.id).apply_async(countdown=300)
+
+        return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품 {" ".join([i.name for i in instance.order.items.all()])} 배송이 출발하였습니다. the delivery service will arrive in 300 seconds'})
+```
+
 ### Reference
 
 - [POSTMAN으로 프론트엔드 역할 대체](https://rhdqors.tistory.com/39)
