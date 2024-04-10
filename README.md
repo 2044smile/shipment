@@ -19,6 +19,12 @@
 - djangorestframework-simplejwt
 - drf-yasg
 
+## Docker-compose
+
+- Django
+- rabbitmq
+- celery
+
 ## Middleware
 
 - GET /health/ `# ok`
