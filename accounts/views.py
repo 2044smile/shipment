@@ -66,6 +66,7 @@ class KakaoSignInAPIView(APIView):
         exp = token.get('exp', None)  # 토큰 만료 시간
 
         return JsonResponse({
+            "id": user.id,
             "access_token": access_token,
             "refresh_token": refresh_token,
             "iat": iat,
@@ -133,6 +134,7 @@ class KakaoSignUpAPIView(APIView):
             user.save()
 
             return JsonResponse({
+                'id': user.id,
                 'kakao_id': user.kakao_id,
                 'access_token': access_token, 
                 'refresh_token': refresh_token,
