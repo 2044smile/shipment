@@ -9,14 +9,19 @@ class ItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    order_id = serializers.IntegerField(source="id")
+    user_id = serializers.IntegerField(source="user.id")
     purchase_date = serializers.DateTimeField(source="created_at")
 
     class Meta:
         model = Order
-        fields = ['user', 'items', 'purchase_date']
+        fields = ['order_id', 'user_id', 'items', 'purchase_date']
 
 
 class DeliverySerializer(serializers.ModelSerializer):
+    order_id = serializers.IntegerField(source="id")
+    user_id = serializers.IntegerField(source="user.id")
+
     class Meta:
         model = Delivery
-        fields = '__all__'
+        fields = ['order_id', 'user_id', 'address', 'status']
