@@ -17,4 +17,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Delivery)
 class DeliveryAdmin(admin.ModelAdmin):
-    list_display = ['user', 'order', 'address', 'status', 'created_at', 'updated_at']
+    list_display = ['sender', 'receiver', 'order', 'address', 'status', 'created_at', 'updated_at']
