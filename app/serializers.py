@@ -5,7 +5,11 @@ from rest_framework import serializers
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = ['name', 'description', 'price']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 class OrderSerializer(serializers.ModelSerializer):
