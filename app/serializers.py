@@ -9,19 +9,26 @@ class ItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_id = serializers.IntegerField(source="id")
-    user_id = serializers.IntegerField(source="user.id")
-    purchase_date = serializers.DateTimeField(source="created_at")
+    order = serializers.IntegerField(read_only=True)
+    user = serializers.IntegerField(read_only=True)
+    purchase_date = serializers.DateTimeField(source="created_at", read_only=True)
 
     class Meta:
         model = Order
-        fields = ['order_id', 'user_id', 'items', 'purchase_date']
+        fields = ['order', 'user', 'items', 'purchase_date']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 class DeliverySerializer(serializers.ModelSerializer):
-    order_id = serializers.IntegerField(source="id")
-    user_id = serializers.IntegerField(source="user.id")
+    sender = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Delivery
-        fields = ['order_id', 'user_id', 'address', 'status']
+        fields = ['order', 'sender', 'receiver', 'address', 'status']
+
+    def create(self, validated_data):
+        validated_data['sender'] = self.context['request'].user  # 토큰 사용자는 sender
+        return super().create(validated_data)
