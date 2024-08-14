@@ -120,7 +120,7 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 # CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 # CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
-CELERY_BROKER_URL="amqp://guest:guest@rabbitmq:5672/"
+CELERY_BROKER_URL="amqp://guest:guest@rabbitmq:5672//"
 # CELERY_RESULT_BACKEND = 'django-db'
 
 # config/celery.py
@@ -164,13 +164,13 @@ class DeliveryViewSet(viewsets.ModelViewSet):
     def departure(self, request, pk=None):
         instance = self.get_object()
         if instance.status == '2':
-            return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
+            return JsonResponse({'message': f'{instance.receiver.kakao_id} 고객님의 상품은 이미 배송이 완료 되었습니다.'})
         instance.status = '1'
         instance.save()
 
-        process_delivery_task.s(delivery_id=instance.id).apply_async(countdown=300)
+        process_delivery_task.s(delivery_id=instance.id).apply_async(countdown=60)
 
-        return JsonResponse({'message': f'{instance.user.kakao_id} 고객님의 상품 {" ".join([i.name for i in instance.order.items.all()])} 배송이 출발하였습니다. the delivery service will arrive in 300 seconds'})
+        return JsonResponse({'message': f'{instance.receiver.kakao_id} 고객님의 상품 {instance.order.item.name} 배송이 출발하였습니다. the delivery service will arrive in 60 seconds'})
 ```
 
 ### Reference
@@ -180,7 +180,20 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
 ### TMI
 
+- GOAL
+  - v1
+    - item, order, delivery 모델들은 Celery, Rabbitmq 비동기 작업에 집중화
+  - v2
+    - item, order, delivery 를 중고나라, 당근마켓과 비슷한 방향으로 모델링
+
 - 20240813
-  - 배달의 민족 처럼 카카오, 소셜 로그인을 하게 되면 username 랜덤
-  - 카카오 로그인을 하고 받은 토큰은 자사 웹 회원가입/로그인 시 인증 용도로 사용
-  - 자사 웹 회원가입/로그인이 되면 simplejwt 토큰으로 관리
+  - accounts
+    - ~~배달의 민족 처럼 카카오, 소셜 로그인을 하게 되면 username 랜덤~~
+    - ~~카카오 로그인을 하고 받은 토큰은 자사 웹 회원가입/로그인 시 인증 용도로 사용~~
+    - ~~자사 웹 회원가입/로그인이 되면 simplejwt 토큰으로 관리~~
+  - app/order
+    - ~~change ManyToMany to OneToOneField~~
+      - ~~중고나라, 당근마켓 처럼 1:1 거래만 가능~~
+- 20240814
+  - make a config/permissions.py
+  - use @property for models
