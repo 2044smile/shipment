@@ -12,5 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('deliveries/', views.DeliveryViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('deliveries/<int:pk>/', views.DeliveryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
-    path('deliveries/<int:pk>/departure/', views.DeliveryViewSet.as_view({'get': 'departure'})),  # 여기에 추가
+    path('deliveries/<int:pk>/departure/', views.DeliveryViewSet.as_view({'get': 'departure'}))
 ]
