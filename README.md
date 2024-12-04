@@ -176,3 +176,17 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
 - [POSTMAN으로 프론트엔드 역할 대체](https://rhdqors.tistory.com/39)
 - [Swagger](https://drf-yasg.readthedocs.io/en/stable/custom_spec.html#the-swagger-auto-schema-decorator)
+
+## 시나리오
+
+### 1. 카카오 로그인 프론트엔드 & 회원 정보 
+![alt text](image.png)
+1. Postman - Authorization Client ID, Callback URL, ... 설정 후 - `Get New Access Token`
+2. 카카오 로그인창 - 회원가입/로그인 - `카카오 토큰 발급`
+3. 카카오 토큰으로 `회원정보 확인 가능`
+
+### 2. 회원가입/로그인 백엔드
+![alt text](image-1.png)
+1. 카카오 토큰으로 `회원가입/로그인`
+2. access_token 으로 shipment 서비스 이용 가능
+3. Swagger - Authorize - Bearer eyJhbGciOiJIUzI1NiIsI...
