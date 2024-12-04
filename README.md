@@ -187,6 +187,82 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
 ### 2. 회원가입/로그인 백엔드
 ![alt text](image-1.png)
-1. 카카오 토큰으로 `회원가입/로그인`
+1. 카카오 토큰으로 `회원가입/로그인` 토큰 발급 access_token
 2. access_token 으로 shipment 서비스 이용 가능
 3. Swagger - Authorize - Bearer eyJhbGciOiJIUzI1NiIsI...
+
+### 3. 아이템(제품) 생성 POST /items/
+1. 토큰과 함께 판매할 아이템을 생성
+```json
+{
+    "id": 2,
+    "user": 1,
+    "name": "반포자이",
+    "description": "",
+    "price": 20000000000
+}
+```
+
+### 4. 아이템(리스트) - GET /items/
+1. 토큰으로 다른 사용자도 판매 등록한 아이템 조회
+```json
+[
+    {
+        "id": 1,
+        "user": 2,
+        "name": "리더스빌",
+        "description": "",
+        "price": 175000000
+    },
+    {
+        "id": 2,
+        "user": 1,
+        "name": "반포자이",
+        "description": "",
+        "price": 20000000000
+    }
+]
+```
+
+### 5. 아이템 주문 - /orders/
+1. 상대방의 아이템 ID 를 입력
+```json
+{
+    "user":2,
+    "item":1,
+    "purchase_date":"2024-12-04T12:47:40.641913Z"
+}
+```
+
+### 6. 배송 서비스 접수 - POST /deliveries/
+1. 토큰으로 API 를 이용하는 사람은 판매자
+2. order 정보에 판매자, 구매자 정보가 존재
+```json
+{
+  "order": 1,
+  "address": "서초구 반포동",
+  "status": "0"  // pending
+}
+// response
+{
+  "id": 3,
+  "order": 1,
+  "sender": 1,
+  "receiver": 2,
+  "address": "서초구 반동",
+  "status": "0"
+}
+```
+
+### 7. 배송 서비스 출발/도착 - GET /deliveries/{id}/departure/
+1. Delivery ID 입력
+```json
+{
+    "id": 3
+}
+// response
+{
+  "message": "3408007879 고객님의 상품 반포자이 배송이 출발하였습니다. the delivery service will arrive in 60 seconds"
+}
+```
+![alt text](image-2.png)
