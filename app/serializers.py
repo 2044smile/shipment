@@ -28,14 +28,19 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class DeliverySerializer(serializers.ModelSerializer):
-    sender = serializers.PrimaryKeyRelatedField(read_only=True)  # read_only=True 설정한 이유는 토큰(request.user) 로 사용자 정보를 가져와서 sender로 저장하기 위함
+    sender = serializers.SerializerMethodField()
+    receiver = serializers.SerializerMethodField()
 
     class Meta:
         model = Delivery
-        fields = ['order', 'sender', 'address', 'status']
+        fields = ['id', 'order', 'sender', 'receiver', 'address', 'status']
+
+    def get_sender(self, obj):
+        return obj.sender.id if obj.sender else None  # 사용자 ID 반환
+
+    def get_receiver(self, obj):
+        return obj.receiver.id if obj.receiver else None  # 사용자 ID 반환
 
     def create(self, validated_data):
-        # validated_data 에 직접 추가하지 않고, 인스턴스를 생성할 때 sender를 지정
-        delivery = Delivery.objects.create(sender=self.context['request'].user, **validated_data)
-
-        return delivery
+        # Order 정보를 통해 자동으로 sender/receiver 관계를 유추
+        return Delivery.objects.create(**validated_data)
