@@ -7,7 +7,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = ['user', 'name', 'description', 'price']
+        fields = ['id', 'user', 'name', 'description', 'price']
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -28,7 +28,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class DeliverySerializer(serializers.ModelSerializer):
-    sender = serializers.IntegerField(read_only=True)  # read_only=True 설정한 이유는 토큰(request.user) 로 사용자 정보를 가져와서 sender로 저장하기 위함
+    sender = serializers.PrimaryKeyRelatedField(read_only=True)  # read_only=True 설정한 이유는 토큰(request.user) 로 사용자 정보를 가져와서 sender로 저장하기 위함
 
     class Meta:
         model = Delivery
