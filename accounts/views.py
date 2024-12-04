@@ -54,6 +54,7 @@ class KakaoAuthAPIView(APIView):
             kakao_nickname = response_data['properties']['nickname']
 
             user, created = User.objects.get_or_create(
+                user_id=kakao_id,
                 kakao_id=kakao_id,
                 kakao_nickname=kakao_nickname
             )
