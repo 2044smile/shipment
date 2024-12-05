@@ -1,6 +1,6 @@
 # shipment
 
-## Introduce
+## [Introduce](https://newbiecs.tistory.com/427)
 
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker compose-8896ED?style=for-the-badge&logo=docker&logoColor=white">
 
